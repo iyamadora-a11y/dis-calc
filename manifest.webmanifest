@@ -1,0 +1,40 @@
+{
+  "name": "할인 계산기",
+  "short_name": "할인계산",
+  "description": "금액과 할인율을 입력하면 할인금액과 최종 결제금액을 즉시 계산합니다. 원금 역산과 연속 할인 지원.",
+  "lang": "ko",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "id": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#F3F1EE",
+  "theme_color": "#24262B",
+  "categories": [
+    "utilities",
+    "finance",
+    "productivity",
+    "shopping"
+  ],
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
