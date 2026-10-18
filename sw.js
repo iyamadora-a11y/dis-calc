@@ -3,7 +3,7 @@
  * 배포 파일을 수정하면 CACHE_VERSION 값을 올려 주세요.
  */
 
-const CACHE_VERSION = "discount-calc-v30";
+const CACHE_VERSION = "discount-calc-v35";
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const FONT_CACHE = `${CACHE_VERSION}-font`;
 

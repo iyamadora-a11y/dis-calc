@@ -161,12 +161,12 @@
   .themebtn{
     flex:none;width:44px;height:44px;align-self:center;
     appearance:none;cursor:pointer;padding:0;
-    background:var(--surface);border:1px solid var(--line);border-radius:50%;
+    background:var(--surface);border:0;border-radius:50%;
     color:var(--muted);display:flex;align-items:center;justify-content:center;
     -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
     transition:color .12s,border-color .12s;
   }
-  .themebtn:hover{border-color:var(--line-strong);color:var(--ink)}
+  .themebtn:hover{color:var(--ink)}
   .themebtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   .themebtn svg{width:19px;height:19px;display:block}
 
@@ -191,7 +191,7 @@
   /* ---- cards ---- */
   .card{
     background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
-    padding:18px 16px;display:flex;flex-direction:column;gap:13px;box-shadow:var(--shadow);
+    padding:18px 16px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow);
     -webkit-backdrop-filter:blur(18px) saturate(1.1);backdrop-filter:blur(18px) saturate(1.1);
   }
 
@@ -218,7 +218,7 @@
     flex:none;appearance:none;border:0;cursor:pointer;padding:0;
     width:30px;height:30px;border-radius:50%;
     background:var(--surface-solid);color:var(--muted);opacity:1;
-    border:1px solid var(--line);
+    border:0;
     font-size:17px;line-height:1;
     display:flex;align-items:center;justify-content:center;
     transition:opacity .12s;
@@ -234,12 +234,12 @@
   .quick{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
   .chip{
     appearance:none;cursor:pointer;
-    background:var(--surface-2);border:1px solid transparent;border-radius:999px;
+    background:var(--surface-2);border:0;border-radius:999px;
     color:var(--muted);font-family:var(--mono);font-size:.94rem;font-weight:500;
     padding:11px 4px;min-height:46px;transition:background .12s,border-color .12s,color .12s;
   }
-  .chip:hover{border-color:var(--accent-line);color:var(--ink)}
-  .chip[aria-pressed="true"]{background:var(--accent-soft);border-color:transparent;color:var(--tint);font-weight:700}
+  .chip:hover{color:var(--ink)}
+  .chip[aria-pressed="true"]{background:var(--accent-soft);color:var(--tint);font-weight:700}
   .chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
   /* ---- chain toggle ---- */
@@ -255,29 +255,33 @@
   .pad-head .target{font-weight:700;color:var(--accent)}
   .paste-btn{
     appearance:none;cursor:pointer;
-    background:var(--surface-2);border:1px solid transparent;border-radius:999px;
+    background:var(--surface-2);border:0;border-radius:999px;
     color:var(--muted);font-family:var(--sans);font-size:.78rem;font-weight:600;
     padding:6px 13px;min-height:32px;transition:border-color .12s,color .12s;
   }
-  .paste-btn:hover{border-color:var(--line-strong);color:var(--ink)}
+  .paste-btn:hover{color:var(--ink)}
   .paste-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   .keypad{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
   .key{
     appearance:none;cursor:pointer;
-    background:var(--surface-2);border:1px solid transparent;border-radius:var(--radius-sm);
+    background:var(--surface-2);border:0;border-radius:var(--radius-sm);
     color:var(--ink);font-family:var(--mono);font-size:1.18rem;font-weight:600;
     min-height:52px;padding:0;
     transition:background .1s,border-color .1s,transform .06s;
   }
-  .key:hover{border-color:var(--accent-line)}
+  .key:hover{background:var(--line-strong)}
   .key:active{transform:scale(.96);background:var(--line-strong)}
   .key.fn{font-family:var(--sans);font-size:1.02rem;font-weight:700;color:var(--muted)}
   .key.wide{grid-column:span 2}
   .key.wide3{grid-column:span 3}
-  .calcpad .key{min-height:48px}
-  .calcpad .key.fn{font-size:.94rem}
+  .calcpad{gap:7px}
+  .calcpad .key{min-height:58px;font-size:1.3rem}
+  .calcpad .key.fn{font-size:1rem}
+  .calcpad .key.op{font-size:1.42rem}
+  .calcpad .key.eq{font-size:1.42rem}
   .key.op{color:var(--tint);font-weight:700;font-size:1.3rem}
-  .key.eq{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:700;font-size:1.3rem}
+  .key.eq{background:var(--accent);color:var(--on-accent);font-weight:700;font-size:1.3rem}
+  .key.eq:hover{background:var(--accent)}
 
   /* ---- 일반 계산 디스플레이 ---- */
   .calcdisp{
@@ -338,14 +342,15 @@
   .note b{color:var(--ink);font-family:var(--mono);font-weight:600}
 
   /* ---- actions ---- */
-  .actions{display:grid;grid-template-columns:1fr;gap:8px}
+  .actions{display:grid;grid-template-columns:1fr;gap:12px}
   .actions.two{grid-template-columns:1fr 1fr}
-  .card-actions{display:grid;grid-template-columns:1fr;padding-top:1px;gap:8px}
+  .card-actions{display:grid;grid-template-columns:1fr;padding-top:0;gap:12px}
   .card-actions.two{grid-template-columns:1fr 1fr}
-  .card-actions.three{grid-template-columns:1fr 1fr}
-  .card-actions.three .btn.primary{grid-column:1 / -1}
+  .card-actions.three{grid-template-columns:repeat(3,1fr);column-gap:8px;row-gap:12px}
+  .card-actions.three .btn{font-size:.88rem;padding-inline:4px;letter-spacing:-.02em}
+  .card-actions.three .btn.primary{grid-column:1 / -1;font-size:.95rem}
   .card-actions .btn{width:100%}
-  .card-actions .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+  .card-actions .btn.primary{background:var(--accent);color:var(--on-accent)}
 
   /* ---- 최근 계산 목록 ---- */
   .histlist{display:flex;flex-direction:column;gap:0}
@@ -363,14 +368,14 @@
   .histtools{display:flex;gap:6px;align-items:center;flex:none}
   .histactions{display:flex;gap:5px;flex:none}
   .histdel{color:var(--danger)}
-  .histdel:hover{border-color:var(--danger)}
+  .histdel:hover{background:var(--danger-soft)}
   .histsend{
     flex:none;appearance:none;cursor:pointer;white-space:nowrap;
-    background:var(--surface-2);border:1px solid transparent;border-radius:999px;
+    background:var(--surface-2);border:0;border-radius:999px;
     color:var(--tint);font-family:var(--sans);font-size:.73rem;font-weight:700;
     padding:6px 9px;min-height:34px;letter-spacing:-.02em;transition:border-color .12s;
   }
-  .histsend:hover{border-color:var(--accent-line)}
+  .histsend:hover{background:var(--line-strong)}
   .histsend:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   .histempty{font-size:.8rem;color:var(--muted-2);padding:4px 0}
 
@@ -396,10 +401,10 @@
   .orderbtns{display:flex;gap:6px;flex:none}
   .orderbtn{
     appearance:none;cursor:pointer;width:42px;height:42px;border-radius:50%;padding:0;
-    background:var(--surface-2);border:1px solid transparent;color:var(--muted);
-    font-size:1rem;font-weight:700;transition:border-color .12s,color .12s;
+    background:var(--surface-2);border:0;color:var(--muted);
+    font-size:1rem;font-weight:700;transition:background .12s,color .12s;
   }
-  .orderbtn:hover:not(:disabled){border-color:var(--accent-line);color:var(--ink)}
+  .orderbtn:hover:not(:disabled){background:var(--line-strong);color:var(--ink)}
   .orderbtn:disabled{opacity:.3;cursor:default;color:var(--muted)}
   .orderbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   .orderhint{font-size:.76rem;color:var(--muted-2);margin:0}
@@ -431,10 +436,10 @@
   .fxswap{
     flex:none;appearance:none;cursor:pointer;
     width:44px;height:50px;border-radius:999px;
-    background:var(--surface-2);border:1px solid transparent;color:var(--tint);
-    font-size:1.1rem;font-weight:700;padding:0;transition:border-color .12s;
+    background:var(--surface-2);border:0;color:var(--tint);
+    font-size:1.1rem;font-weight:700;padding:0;transition:background .12s;
   }
-  .fxswap:hover{border-color:var(--accent-line)}
+  .fxswap:hover{background:var(--line-strong)}
   .fxswap:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   .fxmeta{
     display:flex;align-items:center;justify-content:space-between;gap:10px;
@@ -447,19 +452,19 @@
   .btn{
     appearance:none;cursor:pointer;min-height:52px;border-radius:999px;
     font-family:var(--sans);font-size:.95rem;font-weight:600;
-    border:1px solid var(--line);background:var(--surface-2);color:var(--muted);
-    transition:background .12s,border-color .12s,color .12s,transform .08s;
+    border:0;background:var(--surface-2);color:var(--muted);
+    transition:background .12s,color .12s,transform .08s;
   }
-  .btn:hover{border-color:var(--accent-line);color:var(--ink)}
+  .btn:hover{color:var(--ink)}
   .btn:active{transform:scale(.99)}
   .btn.primary{
-    background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:700;
+    background:var(--accent);color:var(--on-accent);font-weight:700;
     box-shadow:0 2px 10px rgba(22,24,29,.12);
   }
   .btn.primary:hover{color:var(--on-accent)}
   .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   .btn:disabled{opacity:.4;cursor:default}
-  .btn:disabled:hover{border-color:var(--line)}
+  .btn:disabled:hover{color:var(--muted)}
 
   .copybox{
     width:100%;font-family:var(--mono);font-size:.82rem;line-height:1.6;
@@ -576,14 +581,18 @@
       <div class="field">
         <div class="pad-head">
           <button class="paste-btn" id="c-paste" type="button">붙여넣기</button>
-          <button class="paste-btn" id="c-sign" type="button">+/−</button>
+          <span class="histtools">
+            <button class="paste-btn" id="c-pct" type="button" aria-label="백분율">%</button>
+            <button class="paste-btn" id="c-sign" type="button" aria-label="부호 바꾸기">+/−</button>
+          </span>
         </div>
         <div class="keypad calcpad" id="c-keypad"></div>
       </div>
 
       <div class="card-actions three">
-        <button class="btn" id="c-send-d" type="button">할인 계산으로</button>
-        <button class="btn" id="c-send-r" type="button">원금 역산으로</button>
+        <button class="btn" id="c-send-d" type="button">할인 계산</button>
+        <button class="btn" id="c-send-f" type="button">환율</button>
+        <button class="btn" id="c-send-r" type="button">원금 역산</button>
         <button class="btn primary" id="c-copy" type="button">결과 복사</button>
       </div>
       <textarea class="copybox" id="c-copybox" rows="2" readonly hidden></textarea>
@@ -912,19 +921,31 @@
     { t:"7" }, { t:"8" }, { t:"9" }, { t:"←", act:"back", fn:true, aria:"한 글자 지우기" },
     { t:"4" }, { t:"5" }, { t:"6" }, { t:"C", act:"clear", fn:true, aria:"입력 칸 비우기" },
     { t:"1" }, { t:"2" }, { t:"3" }, { t:"이동", act:"next", fn:true, aria:"다음 입력 칸으로 이동" },
-    { t:"00" }, { t:"0", wide:true }, { t:".", dot:true }
+    { t:"00" }, { t:"0" }, { t:"k", act:"kilo", fn:true, aria:"1,000 곱하기" }, { t:".", dot:true }
   ];
 
-  /* 단일 입력칸용 — "이동" 키 대신 소수점을 그 자리에 둔다 */
+  /* 환율 탭용 — 입력칸이 하나라 "이동" 자리에 통화 전환(⇆)을 둔다 */
   var KEYS_SINGLE = [
     { t:"7" }, { t:"8" }, { t:"9" }, { t:"←", act:"back", fn:true, aria:"한 글자 지우기" },
     { t:"4" }, { t:"5" }, { t:"6" }, { t:"C", act:"clear", fn:true, aria:"입력 칸 비우기" },
-    { t:"1" }, { t:"2" }, { t:"3" }, { t:".", dot:true },
-    { t:"00" }, { t:"0", wide3:true }
+    { t:"1" }, { t:"2" }, { t:"3" }, { t:"⇆", act:"next", fn:true, aria:"통화 서로 바꾸기" },
+    { t:"00" }, { t:"0" }, { t:"k", act:"kilo", fn:true, aria:"1,000 곱하기" }, { t:".", dot:true }
   ];
 
+  /* k — 입력칸의 현재 값에 1,000을 곱한다 (25 → 25,000 / 1.5 → 1,500) */
+  function kiloField(el){
+    var amount = el.dataset.kind === "amount";
+    var raw = amount ? digitsOnly(el.value) : decimalOnly(el.value);
+    if (raw === "" || raw === ".") return;
+    var n = parseFloat(raw);
+    if (!isFinite(n)) return;
+    var scaled = n * 1000;
+    el.value = amount ? group(String(Math.round(scaled))) : groupDecimal(trimNum(scaled));
+    try { el.setSelectionRange(el.value.length, el.value.length); } catch(e){}
+  }
+
   function makeKeypad(host, getTarget, onChange, onNext, keys){
-    var dotKey = null;
+    var dotKey = null, kiloKey = null;
 
     (keys || KEYS).forEach(function(def){
       var b = document.createElement("button");
@@ -933,6 +954,7 @@
       b.textContent = def.t;
       if (def.aria) b.setAttribute("aria-label", def.aria);
       if (def.dot) dotKey = b;
+      if (def.act === "kilo") kiloKey = b;
 
       /* keep focus (and the caret) in the field the pad is typing into */
       b.addEventListener("mousedown", function(ev){ ev.preventDefault(); });
@@ -949,6 +971,8 @@
           el.value = "";
         } else if (def.act === "back"){
           backspace(el);
+        } else if (def.act === "kilo"){
+          kiloField(el);
         } else {
           insert(el, def.t);
         }
@@ -963,6 +987,8 @@
       sync: function(){
         var el = getTarget();
         if (dotKey) dotKey.disabled = !el || el.dataset.kind === "amount";
+        /* 할인율 칸에서 ×1,000 은 의미가 없다 */
+        if (kiloKey) kiloKey.disabled = !el || el.dataset.kind === "rate";
       }
     };
   }
@@ -1553,30 +1579,6 @@
     cRender();
   }
 
-  /* 1/x, x², ²√x */
-  function cUnary(kind){
-    if (cError) return;
-    var v = parseFloat(cEntry);
-    var res, label, inner = cTermLabel || fmtNum(v);
-    if (kind === "inv"){
-      if (v === 0){ cFail("0으로 나눌 수 없습니다"); return; }
-      res = 1 / v; label = "1/(" + inner + ")";
-    } else if (kind === "sqr"){
-      res = v * v; label = "sqr(" + inner + ")";
-    } else {
-      if (v < 0){ cFail("음수의 제곱근은 계산할 수 없습니다"); return; }
-      res = Math.sqrt(v); label = "√(" + inner + ")";
-    }
-    if (!isFinite(res)){ cFail("계산 범위를 벗어났습니다"); return; }
-    cEntry = trimNum(res);
-    cFresh = false; cReplace = true; cDone = false;
-    cTermLabel = label;
-    cEntryEl.textContent = commaInt(cEntry);
-    cExprEl.textContent = cTrailText(label);
-    cCopyBtn.disabled = false;
-    histAdd(cTrailText(label) + " =", cEntry);
-  }
-
   function cSetOp(op){
     if (cError) return;
     var v = parseFloat(cEntry);
@@ -1625,6 +1627,18 @@
     cRender();
   }
 
+  /* k — 현재 표시값에 1,000을 곱한다. 연산자를 막 누른 직후(피연산자 미입력)에는 동작하지 않는다. */
+  function cKilo(){
+    if (cError) return;
+    if (cFresh && !cDone) return;          // 연산자 직후 — 곱할 값이 아직 없다
+    var v = parseFloat(cEntry);
+    if (!isFinite(v)) return;
+    if (cDone){ cAcc = null; cOp = null; cDone = false; cTrail = []; }
+    cEntry = trimNum(v * 1000);
+    cFresh = false; cReplace = true; cTermLabel = null;
+    cRender();
+  }
+
   function cSign(){
     if (cError) return;
     if (cEntry === "0") return;
@@ -1641,18 +1655,14 @@
   }
 
   var CALC_KEYS = [
-    { t:"%", act:"pct", fn:true, aria:"백분율" },
-    { t:"CE", act:"ce", fn:true, aria:"현재 입력 지우기" },
+    { t:".", aria:"소수점" },
     { t:"C", act:"clear", fn:true, aria:"전체 지우기" },
     { t:"⌫", act:"back", fn:true, aria:"한 글자 지우기" },
-    { t:"1/x", act:"inv", fn:true, aria:"역수" },
-    { t:"x²", act:"sqr", fn:true, aria:"제곱" },
-    { t:"²√x", act:"sqrt", fn:true, aria:"제곱근" },
     { t:"÷", act:"op", op:"/", opk:true, aria:"나누기" },
     { t:"7" }, { t:"8" }, { t:"9" }, { t:"×", act:"op", op:"*", opk:true, aria:"곱하기" },
     { t:"4" }, { t:"5" }, { t:"6" }, { t:"−", act:"op", op:"-", opk:true, aria:"빼기" },
     { t:"1" }, { t:"2" }, { t:"3" }, { t:"+", act:"op", op:"+", opk:true, aria:"더하기" },
-    { t:"00" }, { t:"0" }, { t:"." }, { t:"=", act:"eq", eqk:true, aria:"계산" }
+    { t:"00" }, { t:"0" }, { t:"k", act:"kilo", fn:true, aria:"1,000 곱하기" }, { t:"=", act:"eq", eqk:true, aria:"계산" }
   ];
 
   (function buildCalcPad(){
@@ -1668,10 +1678,7 @@
         if (def.act === "clear") cClear();
         else if (def.act === "ce") cClearEntry();
         else if (def.act === "back") cBack();
-        else if (def.act === "pct") cPercent();
-        else if (def.act === "inv") cUnary("inv");
-        else if (def.act === "sqr") cUnary("sqr");
-        else if (def.act === "sqrt") cUnary("sqrt");
+        else if (def.act === "kilo") cKilo();
         else if (def.act === "op") cSetOp(def.op);
         else if (def.act === "eq") cEquals();
         else if (def.t === ".") cDot();
@@ -1683,6 +1690,8 @@
 
   $("c-sign").addEventListener("mousedown", function(ev){ ev.preventDefault(); });
   $("c-sign").addEventListener("click", cSign);
+  $("c-pct").addEventListener("mousedown", function(ev){ ev.preventDefault(); });
+  $("c-pct").addEventListener("click", cPercent);
 
   /* ---------- 최근 계산 목록 (일반 계산 / 환율 공용) ---------- */
   var HIST_MAX = 20;
@@ -1867,7 +1876,7 @@
   })();
 
   (function bindCalcSendButtons(){
-    [["c-send-d", sendToAmount], ["c-send-r", sendToReverse]].forEach(function(pair){
+    [["c-send-d", sendToAmount], ["c-send-f", sendToFx], ["c-send-r", sendToReverse]].forEach(function(pair){
       var btn = $(pair[0]), send = pair[1], flash = makeFlash(btn);
       btn.addEventListener("click", function(){
         if (cError){ flash("결과 없음"); return; }
@@ -1895,10 +1904,9 @@
     else if (k === "Enter" || k === "=") cEquals();
     else if (k === "Backspace") cBack();
     else if (k === "Escape") cClear();
-    else if (k === "Delete") cClearEntry();
-    else if (k === "r" || k === "R") cUnary("inv");
-    else if (k === "q" || k === "Q") cUnary("sqr");
+    else if (k === "Delete") cClearEntry();   // CE 버튼은 없애고 단축키로만 남겼다
     else if (k === "%") cPercent();
+    else if (k === "k" || k === "K") cKilo();
     else return;
     ev.preventDefault();
   });
@@ -2157,14 +2165,17 @@
   bindAmount(fAmount, fxCalc, groupDecimal);
   bindClearButtons(panelF, fxCalc);
   bindPaste($("f-paste"), function(){ return fAmount; }, fxCalc);
-  makeKeypad($("f-keypad"), function(){ return fAmount; }, fxCalc, function(){}, KEYS_SINGLE);
+  /* 보내는/받는 통화 맞바꾸기 — 셀렉트 사이의 ⇆ 버튼과 키패드의 ⇆ 키가 공유한다 */
+  function fxSwap(){
+    var a = fFrom.value; fFrom.value = fTo.value; fTo.value = a;
+    fxSavePair(); syncFavButtons(); fxCalc();
+  }
+
+  makeKeypad($("f-keypad"), function(){ return fAmount; }, fxCalc, fxSwap, KEYS_SINGLE);
 
   fFrom.addEventListener("change", function(){ fxSavePair(); syncFavButtons(); fxCalc(); });
   fTo.addEventListener("change", function(){ fxSavePair(); syncFavButtons(); fxCalc(); });
-  $("f-swap").addEventListener("click", function(){
-    var a = fFrom.value; fFrom.value = fTo.value; fTo.value = a;
-    fxSavePair(); syncFavButtons(); fxCalc();
-  });
+  $("f-swap").addEventListener("click", fxSwap);
   $("f-refresh").addEventListener("click", function(){ fxFetch(true); });
 
   var fCopyBox = $("f-copybox"), fCopyBtn = $("f-copy");
