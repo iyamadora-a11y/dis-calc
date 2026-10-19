@@ -344,6 +344,9 @@
   /* ---- actions ---- */
   .actions{display:grid;grid-template-columns:1fr;gap:12px}
   .actions.two{grid-template-columns:1fr 1fr}
+  .actions.three{grid-template-columns:repeat(3,1fr);column-gap:8px;row-gap:12px}
+  .actions.three .btn{font-size:.88rem;padding-inline:4px;letter-spacing:-.02em}
+  .actions.three .btn.primary{grid-column:1 / -1;font-size:.95rem}
   .card-actions{display:grid;grid-template-columns:1fr;padding-top:0;gap:12px}
   .card-actions.two{grid-template-columns:1fr 1fr}
   .card-actions.three{grid-template-columns:repeat(3,1fr);column-gap:8px;row-gap:12px}
@@ -355,11 +358,23 @@
   /* ---- 최근 계산 목록 ---- */
   .histlist{display:flex;flex-direction:column;gap:0}
   .histrow{
-    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
     padding:8px 0;border-bottom:1px solid var(--line);
   }
+  /* "보내기"를 누르면 펼쳐지는 선택 줄 — 행 전체 폭을 쓰고 오른쪽에 정렬된다 */
+  .histmenu{display:flex;gap:5px;flex-basis:100%;justify-content:flex-end;flex-wrap:wrap}
+  .histsend.open{background:var(--accent);color:var(--on-accent)}
+  .histsend.open:hover{background:var(--accent)}
   .histrow:last-child{border-bottom:0}
-  .histmain{display:flex;flex-direction:column;gap:1px;min-width:0;flex:1}
+  .histmain{display:flex;flex-direction:column;gap:1px;min-width:0;flex:1;align-items:flex-start;text-align:left}
+  .histpick{
+    appearance:none;background:transparent;border:0;cursor:pointer;
+    font:inherit;color:inherit;margin:0;padding:4px 6px;border-radius:12px;
+    transition:background .12s;
+  }
+  .histpick:hover{background:var(--surface-2)}
+  .histpick:active{background:var(--line-strong)}
+  .histpick:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
   .hexpr{font-family:var(--mono);font-size:.73rem;color:var(--muted-2);overflow-wrap:anywhere}
   .hval{
     font-family:var(--mono);font-size:1.02rem;font-weight:600;
@@ -563,9 +578,11 @@
       <div class="note" id="d-note" hidden></div>
     </div>
 
-    <div class="actions">
+    <div class="actions three">
       <button class="btn primary" id="d-copy" type="button">결과 복사</button>
-      <button class="btn" id="d-tofx" type="button">환율 금액으로 보내기</button>
+      <button class="btn" id="d-tocalc" type="button">일반 계산</button>
+      <button class="btn" id="d-tofx" type="button">환율</button>
+      <button class="btn" id="d-torev" type="button">원금 역산</button>
     </div>
     <textarea class="copybox" id="d-copybox" rows="4" readonly hidden></textarea>
   </div>
@@ -739,9 +756,11 @@
       <div class="flow" id="r-flow"></div>
     </div>
 
-    <div class="actions">
+    <div class="actions three">
       <button class="btn primary" id="r-copy" type="button">결과 복사</button>
-      <button class="btn" id="r-tofx" type="button">환율 금액으로 보내기</button>
+      <button class="btn" id="r-todisc" type="button">할인 계산</button>
+      <button class="btn" id="r-tocalc" type="button">일반 계산</button>
+      <button class="btn" id="r-tofx" type="button">환율</button>
     </div>
     <textarea class="copybox" id="r-copybox" rows="4" readonly hidden></textarea>
   </div>
@@ -1223,7 +1242,8 @@
   var dAmount = $("d-amount"), dRate = $("d-rate"), dRate2 = $("d-rate2"),
       dChain = $("d-chain"), dChainField = $("d-chain-field"),
       dHint = $("d-hint"), dNote = $("d-note"), dFlow = $("d-flow"),
-      dCopyBox = $("d-copybox"), dCopyBtn = $("d-copy"), dToFxBtn = $("d-tofx"),
+      dCopyBox = $("d-copybox"), dCopyBtn = $("d-copy"),
+      dSendBtns = [$("d-tocalc"), $("d-tofx"), $("d-torev")],
       dPadTarget = $("d-pad-target");
   var dState = { text: "", value: NaN };
   var dInputs = [dAmount, dRate, dRate2];
@@ -1243,7 +1263,7 @@
     dState.text = "";
     dState.value = NaN;
     dCopyBtn.disabled = true;
-    dToFxBtn.disabled = true;
+    dSendBtns.forEach(function(b){ b.disabled = true; });
     dCopyBox.hidden = true;
     syncClearButtons(panelD);
   }
@@ -1324,7 +1344,7 @@
       "최종금액: " + won(final);
     dState.value = final;
     dCopyBtn.disabled = false;
-    dToFxBtn.disabled = false;
+    dSendBtns.forEach(function(b){ b.disabled = false; });
   }
 
   function onDiscountSwitch(){
@@ -1360,18 +1380,24 @@
     if (!dState.text) return;
     copyText(dState.text, dCopyBox, dCopyFlash);
   });
-  (function(){
-    var btn = dToFxBtn, flash = makeFlash(btn);
+  /* 결과를 다른 탭으로 — 실패하면 버튼에 사유를 잠깐 띄운다 */
+  function bindSend(btn, fn, getValue){
+    var flash = makeFlash(btn);
     btn.addEventListener("click", function(){
-      var r = sendToFx(dState.value);
-      if (r !== "ok") flash(r);
+      var r = fn(getValue());
+      if (r !== "ok" && r !== "rounded") flash(r);
     });
-  })();
+  }
+  function dValue(){ return dState.value; }
+  bindSend($("d-tocalc"), sendToCalc,    dValue);
+  bindSend($("d-tofx"),   sendToFx,      dValue);
+  bindSend($("d-torev"),  sendToReverse, dValue);
 
   /* ================= 원금 역산 ================= */
   var panelR = $("panel-reverse");
   var rFinal = $("r-final"), rRate = $("r-rate"), rHint = $("r-hint"), rFlow = $("r-flow"),
-      rCopyBox = $("r-copybox"), rCopyBtn = $("r-copy"), rToFxBtn = $("r-tofx"),
+      rCopyBox = $("r-copybox"), rCopyBtn = $("r-copy"),
+      rSendBtns = [$("r-todisc"), $("r-tocalc"), $("r-tofx")],
       rPadTarget = $("r-pad-target");
   var rState = { text: "", value: NaN };
   var rInputs = [rFinal, rRate];
@@ -1389,7 +1415,7 @@
     rState.text = "";
     rState.value = NaN;
     rCopyBtn.disabled = true;
-    rToFxBtn.disabled = true;
+    rSendBtns.forEach(function(b){ b.disabled = true; });
     rCopyBox.hidden = true;
     syncClearButtons(panelR);
   }
@@ -1439,7 +1465,7 @@
       "원금: " + won(origin);
     rState.value = origin;
     rCopyBtn.disabled = false;
-    rToFxBtn.disabled = false;
+    rSendBtns.forEach(function(b){ b.disabled = false; });
   }
 
   function onReverseSwitch(){
@@ -1469,13 +1495,10 @@
     if (!rState.text) return;
     copyText(rState.text, rCopyBox, rCopyFlash);
   });
-  (function(){
-    var btn = rToFxBtn, flash = makeFlash(btn);
-    btn.addEventListener("click", function(){
-      var r = sendToFx(rState.value);
-      if (r !== "ok") flash(r);
-    });
-  })();
+  function rValue(){ return rState.value; }
+  bindSend($("r-todisc"), sendToAmount, rValue);
+  bindSend($("r-tocalc"), sendToCalc,   rValue);
+  bindSend($("r-tofx"),   sendToFx,     rValue);
 
   /* ================= 일반 계산 ================= */
   var panelC = $("panel-calc");
@@ -1648,7 +1671,8 @@
     if (!isFinite(v)) return;
     if (cDone){ cAcc = null; cOp = null; cDone = false; cTrail = []; }
     cEntry = trimNum(v * 1000);
-    cFresh = false; cReplace = true; cTermLabel = null;
+    /* k 는 자릿수 단축키이므로 뒤이어 누른 숫자는 덮어쓰지 않고 이어 붙인다 */
+    cFresh = false; cReplace = false; cTermLabel = null;
     cRender();
   }
 
@@ -1707,11 +1731,12 @@
   $("c-pct").addEventListener("click", cPercent);
 
   /* ---------- 최근 계산 목록 (일반 계산 / 환율 공용) ---------- */
-  var HIST_MAX = 20;
+  var HIST_MAX = 10;
 
-  /* actions: [{ label, run(item, flash) }] — 줄마다 버튼이 그만큼 붙는다 */
-  function makeHistory(listEl, clearBtn, editBtn, storageKey, emptyText, actions){
-    var items = [], editing = false;
+  /* actions: [{ label, run(item, flash) }] — 줄마다 항상 보이는 버튼
+     menu:    [{ label, run(item, flash) }] — "보내기"를 눌렀을 때만 펼쳐지는 선택지 */
+  function makeHistory(listEl, clearBtn, editBtn, storageKey, emptyText, actions, menu, onPick){
+    var items = [], editing = false, openIdx = -1;
     try {
       var raw = localStorage.getItem(storageKey);
       if (raw){
@@ -1723,6 +1748,8 @@
         }
       }
     } catch(e){ items = []; }
+    /* 보관 개수를 줄였을 때 이전에 쌓인 기록도 불러올 때 잘라낸다 */
+    if (items.length > HIST_MAX) items.length = HIST_MAX;
 
     function save(){
       try { localStorage.setItem(storageKey, JSON.stringify(items.slice(0, HIST_MAX))); } catch(e){}
@@ -1730,7 +1757,8 @@
 
     function render(){
       listEl.innerHTML = "";
-      if (!items.length) editing = false;
+      if (!items.length){ editing = false; openIdx = -1; }
+      if (editing) openIdx = -1;
       clearBtn.hidden = items.length === 0;
       editBtn.hidden = items.length === 0;
       editBtn.textContent = editing ? "완료" : "편집";
@@ -1746,8 +1774,15 @@
         var row = document.createElement("div");
         row.className = "histrow";
 
-        var main = document.createElement("div");
-        main.className = "histmain";
+        /* 기록 줄을 누르면 그 항목을 현재 계산으로 불러온다 (편집 중에는 비활성) */
+        var pickable = !editing && typeof onPick === "function";
+        var main = document.createElement(pickable ? "button" : "div");
+        main.className = "histmain" + (pickable ? " histpick" : "");
+        if (pickable){
+          main.type = "button";
+          main.setAttribute("aria-label", (item.label || commaInt(item.val)) + " 현재 계산으로 불러오기");
+          main.addEventListener("click", function(){ onPick(item); });
+        }
         var e = document.createElement("span");
         e.className = "hexpr";
         e.textContent = item.expr;
@@ -1772,33 +1807,72 @@
           });
           box.appendChild(del);
         } else {
+          var name = item.label || commaInt(item.val);
           actions.forEach(function(act){
             var send = document.createElement("button");
             send.type = "button";
             send.className = "histsend";
             send.textContent = act.label;
-            send.setAttribute("aria-label", (item.label || commaInt(item.val)) + " " + act.label);
+            send.setAttribute("aria-label", name + " " + act.label);
             var flash = makeFlash(send);
             send.addEventListener("click", function(){ act.run(item, flash); });
             box.appendChild(send);
           });
+
+          if (menu && menu.length){
+            var open = openIdx === idx;
+            var more = document.createElement("button");
+            more.type = "button";
+            more.className = "histsend" + (open ? " open" : "");
+            more.textContent = open ? "보내기 ▴" : "보내기 ▾";
+            more.setAttribute("aria-expanded", open ? "true" : "false");
+            more.setAttribute("aria-label", name + " 보내기");
+            more.addEventListener("click", function(){
+              openIdx = open ? -1 : idx;
+              render();
+            });
+            box.appendChild(more);
+          }
         }
 
         row.appendChild(main);
         row.appendChild(box);
+
+        if (!editing && menu && menu.length && openIdx === idx){
+          var menuBox = document.createElement("div");
+          menuBox.className = "histmenu";
+          menu.forEach(function(act){
+            var b = document.createElement("button");
+            b.type = "button";
+            b.className = "histsend";
+            b.textContent = act.label;
+            b.setAttribute("aria-label", (item.label || commaInt(item.val)) + " " + act.label);
+            var flash = makeFlash(b);
+            b.addEventListener("click", function(){
+              var msg = act.run(item, flash);
+              if (msg !== false){ openIdx = -1; render(); }
+            });
+            menuBox.appendChild(b);
+          });
+          row.appendChild(menuBox);
+        }
+
         listEl.appendChild(row);
       });
     }
 
-    clearBtn.addEventListener("click", function(){ items = []; editing = false; save(); render(); });
-    editBtn.addEventListener("click", function(){ editing = !editing; render(); });
+    clearBtn.addEventListener("click", function(){ items = []; editing = false; openIdx = -1; save(); render(); });
+    editBtn.addEventListener("click", function(){ editing = !editing; openIdx = -1; render(); });
 
     return {
-      add: function(expr, val, label){
+      add: function(expr, val, label, extra){
         if (items.length && items[0].val === val && items[0].expr === expr) return;
-        items.unshift(label ? { expr: expr, val: val, label: label } : { expr: expr, val: val });
+        var it = { expr: expr, val: val };
+        if (label) it.label = label;
+        if (extra){ for (var k in extra){ if (Object.prototype.hasOwnProperty.call(extra, k)) it[k] = extra[k]; } }
+        items.unshift(it);
         if (items.length > HIST_MAX) items.length = HIST_MAX;
-        editing = false;
+        editing = false; openIdx = -1;
         save();
         render();
       },
@@ -1808,20 +1882,34 @@
 
   var calcHistory = makeHistory($("c-history"), $("c-hist-clear"), $("c-hist-edit"),
                                 "discount-calc-history", "아직 계산 기록이 없습니다.",
+                                /* 항상 보이는 버튼 — 식과 결과를 함께 복사한다 */
                                 [
-                                  { label: "할인 →", run: function(item, flash){
-                                      var r = sendToAmount(parseFloat(item.val));
-                                      if (r !== "ok" && r !== "rounded") flash(r);
-                                    } },
-                                  { label: "환율 →", run: function(item, flash){
-                                      var r = sendToFx(parseFloat(item.val));
-                                      if (r !== "ok" && r !== "rounded") flash(r);
-                                    } },
-                                  { label: "역산 →", run: function(item, flash){
-                                      var r = sendToReverse(parseFloat(item.val));
-                                      if (r !== "ok" && r !== "rounded") flash(r);
+                                  { label: "복사", run: function(item, flash){
+                                      copyText(histText(item), cCopyBox, flash);
                                     } }
-                                ]);
+                                ],
+                                /* "보내기"를 눌렀을 때 펼쳐지는 선택지 */
+                                [
+                                  { label: "할인 →", run: function(item, flash){ return sendFrom(sendToAmount, item, flash); } },
+                                  { label: "환율 →", run: function(item, flash){ return sendFrom(sendToFx, item, flash); } },
+                                  { label: "역산 →", run: function(item, flash){ return sendFrom(sendToReverse, item, flash); } }
+                                ],
+                                cLoad);
+
+  /* 기록 한 줄을 "식 결과" 한 문장으로 — expr 끝에 이미 "=" 가 들어 있다 */
+  function histText(item){
+    var val = item.label || commaInt(item.val);
+    var expr = item.expr || "";
+    if (!expr) return val;
+    return /[=→]\s*$/.test(expr) ? expr + " " + val : expr + " = " + val;
+  }
+
+  /* 실패하면 false 를 돌려 메뉴를 열어 둔 채 사유를 보여 준다 */
+  function sendFrom(fn, item, flash){
+    var r = fn(parseFloat(item.val));
+    if (r !== "ok" && r !== "rounded"){ flash(r); return false; }
+    return true;
+  }
   function histAdd(expr, val){ calcHistory.add(expr, val); }
   function histRender(){ calcHistory.render(); }
 
@@ -1867,6 +1955,29 @@
     fireInput(fAmount);
     fxCalc();
     selectTab("fx");
+    return "ok";
+  }
+
+  /* 기록 항목을 계산기의 현재 값으로 올린다 — "=" 를 막 누른 직후와 같은 상태 */
+  function cLoad(item){
+    var v = parseFloat(item.val);
+    if (!isFinite(v)) return;
+    cAcc = null; cOp = null; cTrail = []; cTermLabel = null;
+    cEntry = trimNum(v);
+    cFresh = true; cReplace = false; cDone = true; cError = false;
+    cEntryEl.textContent = commaInt(cEntry);
+    var line = item.expr || "";
+    cExprEl.innerHTML = line ? "" : "&nbsp;";
+    if (line) cExprEl.textContent = line;
+    cCopyBtn.disabled = false;
+    cCopyBox.hidden = true;
+  }
+
+  /* 값을 일반 계산 탭으로 올리고 그 탭으로 전환 */
+  function sendToCalc(v){
+    if (!isFinite(v)) return "결과 없음";
+    cLoad({ val: String(v), expr: "" });
+    selectTab("calc");
     return "ok";
   }
 
@@ -2200,9 +2311,38 @@
   var fxHistory = makeHistory($("f-history"), $("f-hist-clear"), $("f-hist-edit"),
                               "discount-calc-fx-history", "아직 저장한 환율 계산이 없습니다.",
                               [{ label: "복사", run: function(item, flash){
-                                  copyText(item.expr + " = " + (item.label || commaInt(item.val)),
-                                           fCopyBox, flash);
-                                } }]);
+                                  copyText(histText(item), fCopyBox, flash);
+                                } }],
+                              [
+                                { label: "할인 →", run: function(item, flash){ return sendFrom(sendToAmount, item, flash); } },
+                                { label: "계산 →", run: function(item, flash){
+                                    /* 화면에 보이는 자릿수 그대로 넘긴다 (KRW/JPY 는 정수) */
+                                    var v = parseFloat(item.val);
+                                    if (isFinite(v) && item.to) v = ZERO_DECIMAL[item.to] ? Math.round(v) : Math.round(v * 100) / 100;
+                                    var r = sendToCalc(v);
+                                    if (r !== "ok"){ flash(r); return false; }
+                                    return true;
+                                  } },
+                                { label: "역산 →", run: function(item, flash){ return sendFrom(sendToReverse, item, flash); } }
+                              ],
+                              fxLoad);
+
+  /* 기록 항목을 환율 탭의 현재 계산으로 되돌린다 (금액 + 통화쌍) */
+  function fxLoad(item){
+    var restored = false;
+    if (item.from && item.to && item.amt != null &&
+        fFrom.querySelector('option[value="' + item.from + '"]') &&
+        fTo.querySelector('option[value="' + item.to + '"]')){
+      fFrom.value = item.from;
+      fTo.value = item.to;
+      restored = true;
+    }
+    fAmount.value = groupDecimal(restored ? String(item.amt) : trimNum(parseFloat(item.val)));
+    fireInput(fAmount);
+    if (restored) fxSavePair();
+    syncFavButtons();
+    fxCalc();
+  }
 
   (function bindFxActions(){
     var saveBtn = $("f-save"), saveFlash = makeFlash(saveBtn);
@@ -2212,7 +2352,8 @@
       var amt = parseFloat(decimalOnly(fAmount.value));
       fxHistory.add(fmtMoney(amt, from) + " " + from + " → " + to,
                     String(fxState.value),
-                    fmtMoney(fxState.value, to) + " " + to);
+                    fmtMoney(fxState.value, to) + " " + to,
+                    { from: from, to: to, amt: String(amt) });
       saveFlash("저장됨 ✓");
     });
 
