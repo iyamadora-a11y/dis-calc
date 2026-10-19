@@ -673,7 +673,7 @@
       <div class="field">
         <div class="pad-head">
           <button class="paste-btn" id="f-paste" type="button">붙여넣기</button>
-          <span class="target">금액</span>
+          <button class="paste-btn" id="f-gocalc" type="button">일반계산 →</button>
         </div>
         <div class="keypad" id="f-keypad"></div>
       </div>
@@ -2305,6 +2305,8 @@
   fTo.addEventListener("change", function(){ fxSavePair(); syncFavButtons(); fxCalc(); });
   $("f-swap").addEventListener("click", fxSwap);
   $("f-refresh").addEventListener("click", function(){ fxFetch(true); });
+  /* 값은 그대로 두고 탭만 옮긴다 */
+  $("f-gocalc").addEventListener("click", function(){ selectTab("calc"); });
 
   var fCopyBox = $("f-copybox"), fCopyBtn = $("f-copy");
 
